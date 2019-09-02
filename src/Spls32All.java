@@ -23,6 +23,7 @@ class Spls32All {
    * Function to print the 2d array in a sensible way
    */
   public static void print(PrintWriter pen, Integer[][] arr) {
+    /*
     printLongLine(pen);
     for (int i = 0; i < 6; i++) {
       pen.print("|");
@@ -31,6 +32,14 @@ class Spls32All {
       }
       pen.println();
       printLongLine(pen);
+    }
+    */
+
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < 6; j++) {
+        pen.printf(" %4d ", arr[i][j]);
+      }
+      pen.println();
     }
   }
 
@@ -341,8 +350,9 @@ class Spls32All {
       }
 
       // record the array
-      pen.println(i);
+      //pen.println(i);
       print(pen, arr);
+      pen.println();
 
       // prepare the next iteration-- make sure we're finding unique SPLS(2,3)s
       previousValues.get(previousValues.size() - 1).add(arr[5][5]);
