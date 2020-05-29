@@ -11,7 +11,7 @@ import java.io.PrintWriter;
  and tries again. Additionally, the 'path' array also stores a "mark" for each slot, which gives information
  about what special rules that slot needs to follow.
  */
-class Spls32All {
+public class Spls32All {
   /*
    * Function to assist with printing the 2d array
    */
