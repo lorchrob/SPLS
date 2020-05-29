@@ -10,7 +10,7 @@ import java.util.ArrayList;
  and tries again. Additionally, the 'path' array also stores a "mark" for each slot, which gives information
  about what special rules that slot needs to follow.
  */
-class Spls38 {
+public class Spls38 {
   /*
    * Function to assist with printing the 2d array
    */
