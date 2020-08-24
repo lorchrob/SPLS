@@ -3,13 +3,15 @@ import java.util.ArrayList;
 import java.io.PrintWriter;
 
 /*
- Program to find a 24x24 array with special qualities. 
+ Program to find all SPLS(3,2)s. 
  This is done iteratively; slots (individual positions in the 2d array) are filled
  one by one along a specified path (see 'path' array) based on generating random integers and
  checking to see if those integers fulfill the requirements of that particular slot. If no valid integers can be found,
  (i.e., if the algorithm runs into a dead end), the algorithm backtracks to previous slots, changes values,
- and tries again. Additionally, the 'path' array also stores a "mark" for each slot, which gives information
- about what special rules that slot needs to follow.
+ and tries again. 
+ 
+ This program is adapted from a program that finds an SPLS(3,8), and the marks in the path array are a relic of that
+ older program (see initializePathHelper() function).
  */
 public class Spls32All {
   /*
@@ -23,18 +25,6 @@ public class Spls32All {
    * Function to print the 2d array in a sensible way
    */
   public static void print(PrintWriter pen, Integer[][] arr) {
-    /*
-    printLongLine(pen);
-    for (int i = 0; i < 6; i++) {
-      pen.print("|");
-      for (int j = 0; j < 6; j++) {
-        pen.printf(" %4d |", arr[i][j]);
-      }
-      pen.println();
-      printLongLine(pen);
-    }
-    */
-
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 6; j++) {
         pen.printf(" %4d ", arr[i][j]);
@@ -44,9 +34,9 @@ public class Spls32All {
   }
 
   /*
-   * Function to initialize the slot in the array
+   * Function to initialize the slots in the array
    * 
-   * NOTE: All other slots (besides the 0-23) will start as 'null'
+   * NOTE: All other slots will start as 'null'
    */
   public static void initializeSlots(Integer[][] arr) {
     int num = 0;
@@ -126,7 +116,7 @@ public class Spls32All {
     // check row (so far) for validity
     // If any other slot in the same row is equal to this slot, then 'num' is
     // invalid
-    // NOTE: make sure to skip the slot that num is currently in
+    // NOTE: We make sure to skip the slot that num is currently in
     for (int i = 0; i < 6; i++) {
       if (i != colNum) {
         if (arr[rowNum][i] != null && num.compareTo(arr[rowNum][i]) == 0) {
@@ -138,7 +128,7 @@ public class Spls32All {
     // check column (so far) for validity
     // If any other slot in the same column is equal to this slot, then 'num' is
     // invalid
-    // NOTE: make sure to skip the slot that num is currently in
+    // NOTE: We make sure to skip the slot that num is currently in
     for (int i = 0; i < 6; i++) {
       if (i != rowNum) {
         if (arr[i][colNum] != null && num.compareTo(arr[i][colNum]) == 0) {
@@ -156,7 +146,7 @@ public class Spls32All {
     int boxRow = (rowNum / 2) * 2; // integer division truncates in Java
     int boxCol = (colNum / 3) * 3;
     // now, look for slots in the box that match 'num'
-    // NOTE: we don't need to check slots of the same row/column, as we already did
+    // NOTE: We don't need to check slots of the same row/column, as we already did
     // this earlier
     for (int i = 0; i < 2; i++) {
       for (int j = 0; j < 3; j++) {
@@ -175,7 +165,7 @@ public class Spls32All {
     boxRow = (rowNum / 3) * 3; // integer division truncates in Java
     boxCol = (colNum / 2) * 2;
     // now, look for slots in the box that match 'num'
-    // NOTE: we don't need to check slots of the same row/column, as we already did
+    // NOTE: We don't need to check slots of the same row/column, as we already did
     // this earlier
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 2; j++) {
@@ -226,66 +216,6 @@ public class Spls32All {
   }
 
   /*
-   * Function to help filling a slot, goes through a 'while' loop in order to fill
-   * a slot (or throw an exception trying). The 'bool' describes whether or not we
-   * want the number of the slot we're filling to be an element of the box(es) in
-   * the 'Callable' object. (So, if our 'bool' is true, we DO want it do be an
-   * element of the box, and so if it's NOT an element (ie, !elementOf()), we
-   * throw it out and try again.)
-   */
-  public static int fillSlotHelper(Integer[][] arr, Integer randNum, int rowNum, int colNum, ArrayList<Integer> values,
-      ArrayList<Integer> previousValues, Random rand, int firstRow, int firstCol, int lastRow, int lastCol,
-      boolean bool) {
-    // while conditions are broken, find a new random number until we run out of
-    // options (throw an exception)
-    if (bool) {
-      while (!elementOf(arr, randNum, firstRow, firstCol, lastRow, lastCol)
-          || !checkSlotGeneral(arr, randNum, rowNum, colNum)) {
-        values.remove(randNum);
-        previousValues.add(randNum);
-        randNum = values.get(rand.nextInt(values.size()));
-      }
-    } else {
-      while (elementOf(arr, randNum, firstRow, firstCol, lastRow, lastCol)
-          || !checkSlotGeneral(arr, randNum, rowNum, colNum)) {
-        values.remove(randNum);
-        previousValues.add(randNum);
-        randNum = values.get(rand.nextInt(values.size()));
-      }
-    }
-
-    // if 'randNum' escaped the 'while' loop, it should be valid!
-    return randNum;
-  }
-
-  public static int fillSlotHelper(Integer[][] arr, Integer randNum, int rowNum, int colNum, ArrayList<Integer> values,
-      ArrayList<Integer> previousValues, Random rand, int firstRow, int firstCol, int lastRow, int lastCol,
-      int firstRow2, int firstCol2, int lastRow2, int lastCol2, boolean bool) {
-    // while conditions are broken, find a new random number until we run out of
-    // options (throw an exception)
-    if (bool) {
-      while (!(elementOf(arr, randNum, firstRow, firstCol, lastRow, lastCol)
-          || elementOf(arr, randNum, firstRow2, firstCol2, lastRow2, lastCol2))
-          || !checkSlotGeneral(arr, randNum, rowNum, colNum)) {
-        values.remove(randNum);
-        previousValues.add(randNum);
-        randNum = values.get(rand.nextInt(values.size()));
-      }
-    } else {
-      while ((elementOf(arr, randNum, firstRow, firstCol, lastRow, lastCol)
-          || elementOf(arr, randNum, firstRow2, firstCol2, lastRow2, lastCol2))
-          || !checkSlotGeneral(arr, randNum, rowNum, colNum)) {
-        values.remove(randNum);
-        previousValues.add(randNum);
-        randNum = values.get(rand.nextInt(values.size()));
-      }
-    }
-
-    // if 'randNum' escaped the 'while' loop, it should be valid!
-    return randNum;
-  }
-
-  /*
    * Function to fill a subsection of the 2d array, applying all rules and
    * backtracking when necessary
    */
@@ -295,7 +225,7 @@ public class Spls32All {
     // keep track of iterations
     int i = 0;
 
-    // keeping going until every slot is filled (or, if we go over 5000000
+    // keeping going until every slot is filled (or, if we go over 1000000
     // iterations, we give up)
     while (current <= finish && i <= 1000000) {
       try {
